@@ -4,6 +4,9 @@
  */
 package segunda_instancia_evaluativa;
 
+import segunda_instancia_evaluativa.modelo.TrampasLog;
+import segunda_instancia_evaluativa.modelo.Estados;
+import segunda_instancia_evaluativa.modelo.Jugador;
 import java.util.List;
 import java.util.Map;
 

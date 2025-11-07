@@ -4,12 +4,15 @@
  */
 package segunda_instancia_evaluativa;
 
+import segunda_instancia_evaluativa.controlador.AppController;
+
 /**
  *
- * @author caito
+ * @author fedee
  */
-public class JugadorNovato extends Jugador {
-    public JugadorNovato(String nombre, int dineroInicial) { super(nombre, dineroInicial); }
-    @Override public String obtenerTipoJugador() { return "Novato"; }
+public class Main {
+    public static void main(String[] args) {
+        AppController app = new AppController();
+        app.iniciarAplicacion();
+    }
 }
-

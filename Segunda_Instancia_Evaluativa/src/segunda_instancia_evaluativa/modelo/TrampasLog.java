@@ -1,4 +1,4 @@
-package segunda_instancia_evaluativa;
+package segunda_instancia_evaluativa.modelo;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license

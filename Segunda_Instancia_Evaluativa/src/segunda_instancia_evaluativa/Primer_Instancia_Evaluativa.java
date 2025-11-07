@@ -3,6 +3,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package segunda_instancia_evaluativa;
+import segunda_instancia_evaluativa.modelo.TrampasEngine;
+import segunda_instancia_evaluativa.modelo.TrampasLog;
+import segunda_instancia_evaluativa.modelo.ValidacionApodo;
+import segunda_instancia_evaluativa.modelo.JugadorExperto;
+import segunda_instancia_evaluativa.modelo.JugadorVIP;
+import segunda_instancia_evaluativa.modelo.JugadorCasino;
+import segunda_instancia_evaluativa.modelo.JugadorNovato;
+import segunda_instancia_evaluativa.modelo.JuegoDadosV3;
+import segunda_instancia_evaluativa.modelo.Estados;
+import segunda_instancia_evaluativa.modelo.Jugador;
 import java.util.*;
 /**
  *
