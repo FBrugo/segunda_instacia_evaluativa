@@ -10,7 +10,7 @@ package segunda_instancia_evaluativa.modelo;
  */
 public class JugadorVIP extends Jugador {
     private boolean rerollDisponible = true; // 1 vez por partida
-    public JugadorVIP(String nombre, int dineroInicial) { super(nombre, dineroInicial); }
+    public JugadorVIP(String nombre, String apodo, int dineroInicial) { super(nombre, dineroInicial); }
     @Override public String obtenerTipoJugador() { return "VIP"; }
     public boolean tieneReroll() { return rerollDisponible; }
     public void usarReroll() { rerollDisponible = false; }
