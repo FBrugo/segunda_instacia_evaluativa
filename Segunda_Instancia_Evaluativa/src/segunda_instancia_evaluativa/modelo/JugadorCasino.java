@@ -9,7 +9,7 @@ package segunda_instancia_evaluativa.modelo;
  * @author caito
  */
 public class JugadorCasino extends Jugador {
-    public JugadorCasino(String nombre, int dineroInicial) { super(nombre, dineroInicial); }
+    public JugadorCasino(String nombre, String apodo, int dineroInicial) { super(nombre, dineroInicial); }
     @Override public String obtenerTipoJugador() { return "La Casa"; }
 }
 
