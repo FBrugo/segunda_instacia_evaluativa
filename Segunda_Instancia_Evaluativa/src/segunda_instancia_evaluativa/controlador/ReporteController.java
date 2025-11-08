@@ -6,6 +6,8 @@ package segunda_instancia_evaluativa.controlador;
 
 import segunda_instancia_evaluativa.modelo.Estados;
 import segunda_instancia_evaluativa.vista.frmVentanaReporteFinal;
+import java.util.List;
+import segunda_instancia_evaluativa.persistencia.ArchivoHistorialDAO;
 
 public class ReporteController {
 
@@ -20,5 +22,9 @@ public class ReporteController {
 
     private void inicializar() {
         // LÓGICA DE SANTI Y CARLOS
+        
+    List<String> ultimas = ArchivoHistorialDAO.obtenerUltimas(3);
+    vista.getLstHistorial().setListData(ultimas.toArray(new String[0]));
+    
     }
 }
