@@ -9,10 +9,32 @@ package segunda_instancia_evaluativa.modelo;
  * @author caito
  */
 public class JugadorVIP extends Jugador {
-    private boolean rerollDisponible = true; // 1 vez por partida
-    public JugadorVIP(String nombre, String apodo, int dineroInicial) { super(nombre, dineroInicial); }
-    @Override public String obtenerTipoJugador() { return "VIP"; }
-    public boolean tieneReroll() { return rerollDisponible; }
-    public void usarReroll() { rerollDisponible = false; }
+    private boolean rerollDisponible = true;
+
+    // Constructor nuevo (con apodo)
+    public JugadorVIP(String nombre, String apodo, int dineroInicial) {
+        super(nombre, dineroInicial);
+        setApodo(apodo);
+    }
+
+    // Constructor viejo (compatibilidad con Primera Instancia)
+    public JugadorVIP(String nombre, int dineroInicial) {
+        this(nombre, nombre, dineroInicial);
+    }
+
+    @Override
+    public String obtenerTipoJugador() {
+        return "VIP";
+    }
+
+    // Métodos específicos de este tipo de jugador
+    public boolean tieneReroll() {
+        return rerollDisponible;
+    }
+
+    public void usarReroll() {
+        rerollDisponible = false;
+    }
 }
+
 

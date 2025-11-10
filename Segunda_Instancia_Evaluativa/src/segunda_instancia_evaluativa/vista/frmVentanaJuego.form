@@ -12,6 +12,11 @@
             <Property name="text" type="java.lang.String" value="Partida"/>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="itemJugarRonda">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Jugar Ronda"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="itemGuardarPartida">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Guardar Partida"/>

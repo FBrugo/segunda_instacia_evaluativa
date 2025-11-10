@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package segunda_instancia_evaluativa.controlador;
+
 import segunda_instancia_evaluativa.modelo.Estados;
 import segunda_instancia_evaluativa.modelo.ConfiguracionJuego;
 import segunda_instancia_evaluativa.vista.frmVentanaConfiguracionInicial;
@@ -27,10 +28,6 @@ public class AppController {
         });
     }
         
-    /**
-     *
-     * @return
-     */
     public ConfiguracionJuego getConfiguracion() {
         return configuracion;
     }

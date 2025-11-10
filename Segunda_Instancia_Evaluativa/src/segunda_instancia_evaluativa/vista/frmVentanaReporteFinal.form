@@ -88,8 +88,8 @@
                       <Component id="lblMayorApuesta" min="-2" pref="191" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="104" max="-2" attributes="0"/>
                       <Component id="lblMejorPuntaje" min="-2" pref="191" max="-2" attributes="0"/>
-                      <EmptySpace pref="115" max="32767" attributes="0"/>
-                      <Component id="lblVictimasTrampas" min="-2" pref="191" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="lblVictimasTrampas" pref="288" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
