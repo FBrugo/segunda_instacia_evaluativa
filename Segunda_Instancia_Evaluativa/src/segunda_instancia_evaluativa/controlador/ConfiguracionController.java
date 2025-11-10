@@ -30,9 +30,9 @@ public class ConfiguracionController {
         this.config = new ConfiguracionJuego();
         this.appController.setConfiguracion(config);
 
-        // Configurar modelo de la tabla de jugadores
+        // Tabla de jugadores: solo muestra Nombre, Apodo y Tipo
         this.modeloTabla = new DefaultTableModel(
-                new Object[]{"Nombre", "Apodo", "Tipo", "Dinero Inicial"}, 0
+                new Object[]{"Nombre", "Apodo", "Tipo"}, 0
         );
         this.vista.getTblJugadores().setModel(modeloTabla);
 
@@ -46,7 +46,6 @@ public class ConfiguracionController {
         vista.getBtnSalir().addActionListener(e -> salir());
 
         vista.getLblErrores().setText("");
-        
     }
 
     private void mostrarError(String mensaje) {
@@ -57,32 +56,20 @@ public class ConfiguracionController {
         vista.getLblErrores().setText("");
     }
 
+    /** Agrega un jugador a la configuración (sin dinero individual). */
     private void agregarJugador() {
         limpiarError();
 
         String nombre = vista.getTxtNombre().getText().trim();
         String apodo = vista.getTxtApodo().getText().trim();
         String tipoStr = (String) vista.getCmbTipoJugador().getSelectedItem();
-        String dineroStr = vista.getTxtDineroInicial().getText().trim();
 
-        if (nombre.isEmpty() || apodo.isEmpty() || dineroStr.isEmpty()) {
-            mostrarError("Nombre, apodo y dinero son obligatorios.");
+        if (nombre.isEmpty() || apodo.isEmpty()) {
+            mostrarError("Nombre y apodo son obligatorios.");
             return;
         }
 
-        int dinero;
-        try {
-            dinero = Integer.parseInt(dineroStr);
-            if (dinero <= 0) {
-                mostrarError("El dinero inicial debe ser mayor a 0.");
-                return;
-            }
-        } catch (NumberFormatException ex) {
-            mostrarError("El dinero inicial debe ser un número entero.");
-            return;
-        }
-
-        // Validación de apodo (según tu lógica previa)
+        // Validación de apodo
         if (!ValidacionApodo.esValido(apodo)) {
             mostrarError("El apodo no es válido según las reglas del juego.");
             return;
@@ -90,34 +77,33 @@ public class ConfiguracionController {
 
         // Apodo único
         for (Jugador j : config.getJugadores()) {
-            if (j.getApodo().equalsIgnoreCase(apodo)) {
+            String apodoExistente = j.getApodo();
+            if (apodoExistente != null && apodoExistente.equalsIgnoreCase(apodo)) {
                 mostrarError("Ya existe un jugador con ese apodo.");
                 return;
             }
         }
 
-        // 2–4 jugadores total (máximo 4)
+        // Límite de jugadores
         if (config.getJugadores().size() >= 4) {
             mostrarError("No se pueden agregar más de 4 jugadores.");
             return;
         }
 
-        // Crear jugador según el tipo
-        Jugador nuevo = crearJugadorPorTipo(nombre, apodo, tipoStr, dinero);
+        // Crear jugador con dinero 0 (se asignará después al iniciar juego)
+        Jugador nuevo = crearJugadorPorTipo(nombre, apodo, tipoStr, 0);
         config.agregarJugador(nuevo);
 
-        // Agregar a la tabla
-        modeloTabla.addRow(new Object[]{nombre, apodo, tipoStr, dinero});
+        // Agregar solo los datos visibles a la tabla
+        modeloTabla.addRow(new Object[]{nombre, apodo, tipoStr});
 
         // Limpiar campos
         vista.getTxtNombre().setText("");
         vista.getTxtApodo().setText("");
-        vista.getTxtDineroInicial().setText("500");
         vista.getCmbTipoJugador().setSelectedIndex(0);
     }
 
     private Jugador crearJugadorPorTipo(String nombre, String apodo, String tipoStr, int dinero) {
-        // Ajustá los constructores si tus clases tienen otra firma
         switch (tipoStr.toUpperCase()) {
             case "NOVATO":
                 return new JugadorNovato(nombre, apodo, dinero);
@@ -145,7 +131,7 @@ public class ConfiguracionController {
 
         Jugador aEliminar = null;
         for (Jugador j : config.getJugadores()) {
-            if (j.getApodo().equalsIgnoreCase(apodo)) {
+            if (j.getApodo() != null && j.getApodo().equalsIgnoreCase(apodo)) {
                 aEliminar = j;
                 break;
             }
@@ -157,6 +143,7 @@ public class ConfiguracionController {
         modeloTabla.removeRow(fila);
     }
 
+    /** Valida configuración general y abre la ventana de juego. */
     private void iniciarJuego() {
         limpiarError();
 
@@ -166,6 +153,32 @@ public class ConfiguracionController {
             return;
         }
 
+        // Leer dinero inicial (global)
+        String dineroStr = vista.getTxtDineroInicial().getText().trim();
+        if (dineroStr.isEmpty()) {
+            mostrarError("Debés indicar el dinero inicial de la partida.");
+            return;
+        }
+
+        int dineroInicial;
+        try {
+            dineroInicial = Integer.parseInt(dineroStr);
+            if (dineroInicial <= 0) {
+                mostrarError("El dinero inicial debe ser mayor a 0.");
+                return;
+            }
+        } catch (NumberFormatException ex) {
+            mostrarError("El dinero inicial debe ser un número entero.");
+            return;
+        }
+
+        // Guardar configuración global
+        config.setDineroInicial(dineroInicial);
+        for (Jugador j : config.getJugadores()) {
+            j.setDinero(dineroInicial);
+        }
+
+        // Configuración de partidas/rondas/trampas
         String cantPartidasStr = (String) vista.getCmbCantidadPartidas().getSelectedItem();
         String rondasStr = (String) vista.getCmbRondasPorPartida().getSelectedItem();
 

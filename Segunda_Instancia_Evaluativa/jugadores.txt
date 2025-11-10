@@ -1,0 +1,2 @@
+federi;fede;Novato;650;6
+casino;casino;Novato;350;3

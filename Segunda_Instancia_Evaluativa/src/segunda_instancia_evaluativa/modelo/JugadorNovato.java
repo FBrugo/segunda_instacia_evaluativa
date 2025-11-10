@@ -9,7 +9,21 @@ package segunda_instancia_evaluativa.modelo;
  * @author caito
  */
 public class JugadorNovato extends Jugador {
-    public JugadorNovato(String nombre, String apodo ,int dineroInicial) { super(nombre, dineroInicial); }
-    @Override public String obtenerTipoJugador() { return "Novato"; }
+    // Constructor nuevo (con apodo)
+    public JugadorNovato(String nombre, String apodo, int dineroInicial) {
+        super(nombre, dineroInicial);
+        setApodo(apodo);
+    }
+
+    // Constructor viejo (compatibilidad con Primera Instancia)
+    public JugadorNovato(String nombre, int dineroInicial) {
+        this(nombre, nombre, dineroInicial); // Usa el nombre como apodo por defecto
+    }
+
+    @Override
+    public String obtenerTipoJugador() {
+        return "Novato";
+    }
 }
+
 

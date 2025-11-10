@@ -37,6 +37,7 @@ public class frmVentanaJuego extends javax.swing.JFrame {
         txtLog = new javax.swing.JTextArea();
         JMenuBar = new javax.swing.JMenuBar();
         menuPartida = new javax.swing.JMenu();
+        itemJugarRonda = new javax.swing.JMenuItem();
         itemGuardarPartida = new javax.swing.JMenuItem();
         itemSalirPartida = new javax.swing.JMenuItem();
         menuVer = new javax.swing.JMenu();
@@ -124,6 +125,9 @@ public class frmVentanaJuego extends javax.swing.JFrame {
 
         menuPartida.setText("Partida");
 
+        itemJugarRonda.setText("Jugar Ronda");
+        menuPartida.add(itemJugarRonda);
+
         itemGuardarPartida.setText("Guardar Partida");
         menuPartida.add(itemGuardarPartida);
 
@@ -209,6 +213,7 @@ public class frmVentanaJuego extends javax.swing.JFrame {
     private javax.swing.JMenuItem itemEstadisticas;
     private javax.swing.JMenuItem itemGuardarPartida;
     private javax.swing.JMenuItem itemHistorial;
+    private javax.swing.JMenuItem itemJugarRonda;
     private javax.swing.JMenuItem itemRanking;
     private javax.swing.JMenuItem itemSalirPartida;
     private javax.swing.JPanel jPanel1;
@@ -229,6 +234,8 @@ public class frmVentanaJuego extends javax.swing.JFrame {
     public javax.swing.JMenuItem getItemRanking() { return itemRanking; }
     public javax.swing.JMenuItem getItemHistorial() { return itemHistorial; }
     public javax.swing.JMenuItem getItemEstadisticas() { return itemEstadisticas; }
+    public javax.swing.JMenuItem getItemJugarRonda() {return itemJugarRonda;}
+
 
     public javax.swing.JLabel getLblPartida() { return lblPartida; }
     public javax.swing.JLabel getLblRonda() { return lblRonda; }
@@ -236,5 +243,4 @@ public class frmVentanaJuego extends javax.swing.JFrame {
 
     public javax.swing.JTable getTblJugadores() { return tblJugadores; }
     public javax.swing.JTextArea getTxtLog() { return txtLog; }
-
 }
