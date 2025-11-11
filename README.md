@@ -17,3 +17,16 @@ Menú Ver → Ranking actual muestra el ranking desde la base de datos.
 Todos los resultados se guardan en:
 jugadores.txt y historial.txt
 Tablas jugadores y partidas en SQL Server
+
+
+Principales Prompts utilizados en el desarrollo del proyecto:
+
+1. ¿Cómo puedo dividir mi código Java en modelo, vista y controlador?
+
+2. ¿Cómo guardo datos en una base de datos SQL Server usando JDBC?
+
+3. ¿Cómo hago para leer un ranking desde la base de datos y mostrarlo en pantalla?
+
+4. ¿Qué estructura debería tener el proyecto para cumplir el patrón MVC?”
+
+5. ¿Cómo configuro un archivo de conexión a SQL Server en Java?
