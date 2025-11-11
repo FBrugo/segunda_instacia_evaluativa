@@ -30,3 +30,5 @@ Principales Prompts utilizados en el desarrollo del proyecto:
 4. ¿Qué estructura debería tener el proyecto para cumplir el patrón MVC?
 
 5. ¿Cómo configuro un archivo de conexión a SQL Server en Java?
+
+Video presentación: https://drive.google.com/file/d/19rJvm08K5gtMC5B-QMJnQni-n-rCMii6/view?usp=sharing
