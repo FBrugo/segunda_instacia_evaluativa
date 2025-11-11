@@ -18,11 +18,15 @@ import segunda_instancia_evaluativa.persistencia.JugadorDAO;
 import segunda_instancia_evaluativa.persistencia.PartidaDAO;
 import segunda_instancia_evaluativa.vista.frmVentanaJuego;
 import segunda_instancia_evaluativa.vista.frmVentanaReporteFinal;
+import segunda_instancia_evaluativa.vista.frmVentanaConfiguracionInicial; // 👈 IMPORTANTE
 
 public class JuegoController {
-    private final frmVentanaJuego vista;
+        private final frmVentanaJuego vista;
     private final ConfiguracionJuego config;
     private final DefaultTableModel modeloTabla;
+
+    // ventana anterior
+    private final frmVentanaConfiguracionInicial vistaConfig;
 
     // Estadísticas y trampas
     private final Estados estados;
@@ -35,14 +39,17 @@ public class JuegoController {
     private int rondasTotales = 0;
     private int pozo = 0;
 
-    public JuegoController(frmVentanaJuego vista, ConfiguracionJuego config, Estados estados) {
+    public JuegoController(frmVentanaJuego vista,
+                           ConfiguracionJuego config,
+                           Estados estados,
+                           frmVentanaConfiguracionInicial vistaConfig) {
         this.vista = vista;
         this.config = config;
         this.estados = estados;
+        this.vistaConfig = vistaConfig;
 
-        // Si las trampas están desactivadas, probabilidad 0
         if (config.isTrampasActivadas()) {
-            this.trampas = new TrampasEngine(0.25, 0.25); // 25% y 25% de ejemplo
+            this.trampas = new TrampasEngine(0.25, 0.25);
         } else {
             this.trampas = new TrampasEngine(0.0, 0.0);
         }
@@ -58,20 +65,17 @@ public class JuegoController {
         inicializarEventos();
     }
 
-    // =========================
-    // Inicialización de vista
-    // =========================
     private void cargarJugadores() {
         modeloTabla.setRowCount(0);
         for (Jugador j : config.getJugadores()) {
             modeloTabla.addRow(new Object[]{
-                j.getNombre(),
-                j.getApodo(),
-                j.getTipo(),
-                j.getDinero(),
-                0,          // Apuesta
-                "-",        // Tirada
-                j.getVictorias()
+                    j.getNombre(),
+                    j.getApodo(),
+                    j.getTipo(),
+                    j.getDinero(),
+                    0,
+                    "-",
+                    j.getVictorias()
             });
         }
     }
@@ -86,15 +90,35 @@ public class JuegoController {
         // Menú "Partida"
         vista.getItemJugarRonda().addActionListener(e -> jugarRonda());
         vista.getItemGuardarPartida().addActionListener(e -> guardarPartida());
-        vista.getItemSalirPartida().addActionListener(e -> System.exit(0));
+        vista.getItemSalirPartida().addActionListener(e -> salirDePartida());
 
         // Menú "Ver"
-        // Ranking: ahora lee desde la BASE DE DATOS
         vista.getItemRanking().addActionListener(e -> mostrarRankingBD());
-
-        // Historial y estadísticas: abre la ventana de reporte (lógica anterior)
         vista.getItemHistorial().addActionListener(e -> abrirReporteFinal());
         vista.getItemEstadisticas().addActionListener(e -> abrirReporteFinal());
+    }
+
+    private void salirDePartida() {
+        int opcion = JOptionPane.showConfirmDialog(
+                vista,
+                "¿Deseás salir de la partida y volver a la pantalla inicial?",
+                "Salir de la partida",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (opcion == JOptionPane.YES_OPTION) {
+            vista.dispose(); // cierra solo el juego
+
+            if (vistaConfig != null) {
+                vistaConfig.setLocationRelativeTo(null);
+                vistaConfig.setVisible(true);
+            } else {
+                // por las dudas, pero no debería pasar
+                frmVentanaConfiguracionInicial nueva = new frmVentanaConfiguracionInicial();
+                nueva.setLocationRelativeTo(null);
+                nueva.setVisible(true);
+            }
+        }
     }
 
     private void abrirReporteFinal() {
@@ -104,9 +128,6 @@ public class JuegoController {
         vistaReporte.setVisible(true);
     }
 
-    // =========================
-    // BONUS: Ranking desde BD
-    // =========================
     private void mostrarRankingBD() {
         var filas = JugadorDAO.obtenerRanking();
 
@@ -114,7 +135,7 @@ public class JuegoController {
             JOptionPane.showMessageDialog(
                     vista,
                     "No hay datos de ranking en la base de datos.\n" +
-                    "Finalizá al menos una partida para actualizarlo.",
+                            "Finalizá al menos una partida para actualizarlo.",
                     "Ranking actual (BD)",
                     JOptionPane.INFORMATION_MESSAGE
             );
@@ -123,10 +144,10 @@ public class JuegoController {
 
         StringBuilder sb = new StringBuilder("Ranking actual (BD)\n\n");
         for (Object[] f : filas) {
-            String nombre   = (String) f[0];
-            String tipo     = (String) f[1];
-            double dinero   = (double) f[2];
-            int victorias   = (int) f[3];
+            String nombre = (String) f[0];
+            String tipo = (String) f[1];
+            double dinero = (double) f[2];
+            int victorias = (int) f[3];
 
             sb.append(String.format("%s (%s) - $%.2f - %d victorias\n",
                     nombre, tipo, dinero, victorias));
@@ -140,9 +161,6 @@ public class JuegoController {
         );
     }
 
-    // =========================
-    // LÓGICA DE JUEGO
-    // =========================
     private void jugarRonda() {
         vista.getTxtLog().append("\n=== RONDA " + rondaActual + " ===\n");
         Random rand = new Random();
@@ -153,25 +171,21 @@ public class JuegoController {
         for (int i = 0; i < config.getJugadores().size(); i++) {
             Jugador j = config.getJugadores().get(i);
 
-            // Si el jugador está en 0, no juega
             if (j.getDinero() <= 0) {
                 vista.getTxtLog().append(j.getApodo() + " no puede apostar (saldo $0).\n");
-                modeloTabla.setValueAt(0, i, 4);   // Apuesta
-                modeloTabla.setValueAt("-", i, 5); // Tirada
+                modeloTabla.setValueAt(0, i, 4);
+                modeloTabla.setValueAt("-", i, 5);
                 continue;
             }
 
-            // Apuesta fija
             int apuesta = 50;
             if (j.getDinero() < apuesta) {
                 apuesta = j.getDinero();
             }
 
-            // Tirada de dados
             int d1 = rand.nextInt(6) + 1;
             int d2 = rand.nextInt(6) + 1;
 
-            // Trampas
             if (config.isTrampasActivadas()) {
                 if (j instanceof JugadorCasino) {
                     int antes1 = d1, antes2 = d2;
@@ -195,15 +209,12 @@ public class JuegoController {
 
             int suma = d1 + d2;
 
-            // Actualizar dinero y pozo
             j.setDinero(j.getDinero() - apuesta);
             pozo += apuesta;
 
-            // Registrar estadísticas
             estados.registrarApuesta(j.getApodo(), apuesta);
             estados.registrarPuntaje(j.getApodo(), suma);
 
-            // Log de la jugada
             vista.getTxtLog().append(String.format(
                     "%s (%s) apuesta $%d, tira %d (%d+%d) → saldo $%d\n",
                     j.getApodo(),
@@ -214,19 +225,16 @@ public class JuegoController {
                     j.getDinero()
             ));
 
-            // Actualizar tabla
-            modeloTabla.setValueAt(j.getDinero(), i, 3); // Dinero
-            modeloTabla.setValueAt(apuesta, i, 4);       // Apuesta
-            modeloTabla.setValueAt(suma, i, 5);          // Tirada
+            modeloTabla.setValueAt(j.getDinero(), i, 3);
+            modeloTabla.setValueAt(apuesta, i, 4);
+            modeloTabla.setValueAt(suma, i, 5);
 
-            // Elegir ganador de la ronda
             if (suma > mejorSuma) {
                 mejorSuma = suma;
                 ganador = j;
             }
         }
 
-        // Resolver ronda
         if (ganador != null && pozo > 0) {
             ganador.setDinero(ganador.getDinero() + pozo);
             ganador.incrementarPartidasGanadas();
@@ -234,7 +242,6 @@ public class JuegoController {
             vista.getTxtLog().append("→ Ganador: " + ganador.getApodo()
                     + " con " + mejorSuma + " gana el pozo de $" + pozo + "\n");
 
-            // Actualizar fila del ganador (dinero y victorias)
             for (int i = 0; i < config.getJugadores().size(); i++) {
                 if (config.getJugadores().get(i) == ganador) {
                     modeloTabla.setValueAt(ganador.getDinero(), i, 3);
@@ -248,7 +255,6 @@ public class JuegoController {
 
         rondasTotales++;
 
-        // Siguiente ronda / partida
         rondaActual++;
         if (rondaActual > config.getRondasPorPartida()) {
             partidaActual++;
@@ -257,19 +263,14 @@ public class JuegoController {
 
         actualizarPanelSuperior();
 
-        // ¿Se terminaron todas las partidas?
         if (partidaActual > config.getCantidadPartidas()) {
             terminarJuego(ganador);
         }
     }
 
-    // =========================
-    // Fin del juego
-    // =========================
     private void terminarJuego(Jugador ultimoGanador) {
         vista.getTxtLog().append("\n=== FIN DEL JUEGO ===\n");
 
-        // Actualizar estadísticas globales
         estados.sumarPartida();
         estados.considerarDuracion(rondasTotales);
 
@@ -277,21 +278,14 @@ public class JuegoController {
         String detalle = "PARTIDA - Ganador: " + ganadorNombre
                 + " | Rondas: " + rondasTotales;
 
-        // Guardar en historial (archivo)
         ArchivoHistorialDAO.guardarPartida(detalle);
         vista.getTxtLog().append("Resumen guardado en historial.\n");
 
-        // BONUS: guardar también en la base de datos
-        // (si no tenés un pozo acumulado por partida, podés dejar 0.0)
         PartidaDAO.guardarPartida(ganadorNombre, rondasTotales, 0.0);
 
-        // No se puede seguir jugando
         vista.getItemJugarRonda().setEnabled(false);
     }
 
-    // =========================
-    // Guardado manual
-    // =========================
     private void guardarPartida() {
         ArchivoHistorialDAO.guardarPartida("Partida guardada manualmente.");
         vista.getTxtLog().append("Partida guardada.\n");

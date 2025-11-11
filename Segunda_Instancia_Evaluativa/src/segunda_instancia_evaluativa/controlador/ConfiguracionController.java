@@ -15,6 +15,8 @@ import segunda_instancia_evaluativa.modelo.JugadorVIP;
 import segunda_instancia_evaluativa.modelo.ValidacionApodo;
 import segunda_instancia_evaluativa.vista.frmVentanaConfiguracionInicial;
 import segunda_instancia_evaluativa.vista.frmVentanaJuego;
+import segunda_instancia_evaluativa.persistencia.ArchivoHistorialDAO;
+import java.util.List;
 
 public class ConfiguracionController {
 
@@ -30,7 +32,6 @@ public class ConfiguracionController {
         this.config = new ConfiguracionJuego();
         this.appController.setConfiguracion(config);
 
-        // Tabla de jugadores: solo muestra Nombre, Apodo y Tipo
         this.modeloTabla = new DefaultTableModel(
                 new Object[]{"Nombre", "Apodo", "Tipo"}, 0
         );
@@ -43,6 +44,7 @@ public class ConfiguracionController {
         vista.getBtnAgregarJugador().addActionListener(e -> agregarJugador());
         vista.getBtnEliminarJugador().addActionListener(e -> eliminarJugador());
         vista.getBtnIniciarJuego().addActionListener(e -> iniciarJuego());
+        vista.getBtnCargarGuardado().addActionListener(e -> cargarJuegoGuardado());
         vista.getBtnSalir().addActionListener(e -> salir());
 
         vista.getLblErrores().setText("");
@@ -56,7 +58,6 @@ public class ConfiguracionController {
         vista.getLblErrores().setText("");
     }
 
-    /** Agrega un jugador a la configuración (sin dinero individual). */
     private void agregarJugador() {
         limpiarError();
 
@@ -69,13 +70,11 @@ public class ConfiguracionController {
             return;
         }
 
-        // Validación de apodo
         if (!ValidacionApodo.esValido(apodo)) {
             mostrarError("El apodo no es válido según las reglas del juego.");
             return;
         }
 
-        // Apodo único
         for (Jugador j : config.getJugadores()) {
             String apodoExistente = j.getApodo();
             if (apodoExistente != null && apodoExistente.equalsIgnoreCase(apodo)) {
@@ -84,20 +83,16 @@ public class ConfiguracionController {
             }
         }
 
-        // Límite de jugadores
         if (config.getJugadores().size() >= 4) {
             mostrarError("No se pueden agregar más de 4 jugadores.");
             return;
         }
 
-        // Crear jugador con dinero 0 (se asignará después al iniciar juego)
         Jugador nuevo = crearJugadorPorTipo(nombre, apodo, tipoStr, 0);
         config.agregarJugador(nuevo);
 
-        // Agregar solo los datos visibles a la tabla
         modeloTabla.addRow(new Object[]{nombre, apodo, tipoStr});
 
-        // Limpiar campos
         vista.getTxtNombre().setText("");
         vista.getTxtApodo().setText("");
         vista.getCmbTipoJugador().setSelectedIndex(0);
@@ -143,7 +138,6 @@ public class ConfiguracionController {
         modeloTabla.removeRow(fila);
     }
 
-    /** Valida configuración general y abre la ventana de juego. */
     private void iniciarJuego() {
         limpiarError();
 
@@ -153,7 +147,6 @@ public class ConfiguracionController {
             return;
         }
 
-        // Leer dinero inicial (global)
         String dineroStr = vista.getTxtDineroInicial().getText().trim();
         if (dineroStr.isEmpty()) {
             mostrarError("Debés indicar el dinero inicial de la partida.");
@@ -172,13 +165,11 @@ public class ConfiguracionController {
             return;
         }
 
-        // Guardar configuración global
         config.setDineroInicial(dineroInicial);
         for (Jugador j : config.getJugadores()) {
             j.setDinero(dineroInicial);
         }
 
-        // Configuración de partidas/rondas/trampas
         String cantPartidasStr = (String) vista.getCmbCantidadPartidas().getSelectedItem();
         String rondasStr = (String) vista.getCmbRondasPorPartida().getSelectedItem();
 
@@ -189,13 +180,47 @@ public class ConfiguracionController {
         config.setRondasPorPartida(rondas);
         config.setTrampasActivadas(vista.getChkTrampasActivadas().isSelected());
 
-        // Abrir ventana de juego
         frmVentanaJuego vistaJuego = new frmVentanaJuego();
-        new JuegoController(vistaJuego, config, appController.getEstados());
+
+        // 👇 ahora pasamos también la ventana de configuración
+        new JuegoController(vistaJuego, config, appController.getEstados(), vista);
+
         vistaJuego.setLocationRelativeTo(vista);
         vistaJuego.setVisible(true);
 
-        vista.dispose();
+        vista.setVisible(false); // la ocultamos, no la destruimos
+    }
+
+    private void cargarJuegoGuardado() {
+        limpiarError();
+
+        List<String> historial = ArchivoHistorialDAO.leerHistorial();
+
+        if (historial == null || historial.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    vista,
+                    "No hay partidas guardadas en el historial.",
+                    "Cargar juego guardado",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String linea : historial) {
+            sb.append(linea).append("\n");
+        }
+
+        javax.swing.JTextArea area = new javax.swing.JTextArea(sb.toString(), 15, 50);
+        area.setEditable(false);
+        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(area);
+
+        JOptionPane.showMessageDialog(
+                vista,
+                scroll,
+                "Partidas guardadas",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private void salir() {

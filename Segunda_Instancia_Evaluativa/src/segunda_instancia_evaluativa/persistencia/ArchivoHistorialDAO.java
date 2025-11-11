@@ -13,6 +13,7 @@ import java.util.*;
 public class ArchivoHistorialDAO {
     private static final String ARCHIVO = "historial.txt";
 
+    /** Guarda una línea en el historial */
     public static void guardarPartida(String descripcion) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(ARCHIVO, true))) {
             bw.write(descripcion);
@@ -22,6 +23,7 @@ public class ArchivoHistorialDAO {
         }
     }
 
+    /** Devuelve las últimas N líneas del historial (por ejemplo, las 10 últimas partidas) */
     public static List<String> obtenerUltimas(int n) {
         List<String> lineas = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO))) {
@@ -35,5 +37,25 @@ public class ArchivoHistorialDAO {
 
         int size = lineas.size();
         return size <= n ? lineas : lineas.subList(size - n, size);
+    }
+
+    /** 🔹 NUEVO: Devuelve todo el historial completo, línea por línea */
+    public static List<String> leerHistorial() {
+        List<String> lineas = new ArrayList<>();
+        File f = new File(ARCHIVO);
+        if (!f.exists()) {
+            return lineas;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                lineas.add(linea);
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer historial: " + e.getMessage());
+        }
+
+        return lineas;
     }
 }
